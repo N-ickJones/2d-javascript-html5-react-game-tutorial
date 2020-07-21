@@ -1,0 +1,52 @@
+.container {
+  position: relative;
+  background-color: #568cd2;
+  height: 98vh;
+  width: 100vw;
+}
+
+.character {
+  position: absolute;
+  display: block;
+  height: 100px;
+  width: 100px;
+  bottom: 0;
+  left: 0;
+  background-image: url('../../assets/images/mario.png');
+  background-size: 110% 100%;
+  border: 1px solid black;
+}
+
+.stage {
+  position: absolute;
+  display: block;
+  bottom: 0;
+  left: 0;
+  height: 100vh;
+  width: calc(10 * 100vw);
+  border: 50px solid #C84B1B;
+}
+
+.block {
+  position: absolute;
+  display: block;
+  height: 200px;
+  width: 80px;
+  bottom: 0;
+  left: 0;
+  background-image: url('../../assets/images/pipe.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  //background-color: #00BA15;
+}
+
+.banner {
+  display: flex;
+}
+
+.bannerText {
+  margin: 50px auto 0 auto;
+  padding: .5rem;
+  background-color: #FDB918;
+  border-radius: 10px;
+}
