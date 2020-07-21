@@ -6,7 +6,9 @@ export interface ICreateEngine {
     direction: direction;
     position: number;
     jumpMax: number,
-    blocks: number[];
+    blocks: CreateEngineBlock[];
+    setState: React.Dispatch<React.SetStateAction<CreateEngineObject>> | null;
+    createLevel(): void;
     checkBlocks(): void;
     doJump(): void;
     jump(): void;
@@ -17,19 +19,34 @@ export interface ICreateEngine {
 export type CreateEngineObject = {
     stage: number;
     position: number;
-    blocks: number[];
+    blocks: CreateEngineBlock[];
     status: gameStatus;
 }
 
 export type CreateEngineSettings = {
     tile: number;
-    blocks: number[];
     jumpVelocity: number;
     jumpHeight: number;
     charWidth: number;
     charHeight: number;
     blockWidth: number;
     blockHeight: number;
+}
+
+export type CreateEngineBlock = {
+    transform: number;
+    height: number;
+    width: number;
+}
+
+export type CreateEngineLevel = {  
+    length: number;
+    spacingMin: number;
+    spacingMax: number;
+    heightMin: number;
+    heightMax: number;
+    widthMin: number;
+    widthMax: number;
 }
 
 export enum gameStatus {
@@ -45,22 +62,18 @@ export enum direction {
 
 export class CreateEngine implements ICreateEngine {
     constructor(
-        public setState: React.Dispatch<React.SetStateAction<CreateEngineObject>>,
         public settings: CreateEngineSettings = {
-            tile: 10,
-            blocks: [
-                140,
-                250,
-                390,
-            ],
-            jumpVelocity: 1.4,
-            jumpHeight: 40,
-            charWidth: 80,
+            tile: 20,
+            jumpVelocity: 1.5,
+            jumpHeight: 50,
+            charWidth: 100,
             charHeight: 100,
-            blockWidth: 80,
+            blockWidth: 150,
             blockHeight: 200,
         }
-    ) {}
+    ){}
+
+    setState = null as unknown as React.Dispatch<React.SetStateAction<CreateEngineObject>>;
 
     isJumping = false;
     hasStarted = false;
@@ -68,23 +81,54 @@ export class CreateEngine implements ICreateEngine {
     direction = direction.Up;
     stage = 0;
     position = 0;
+    width = 2000;
+    offset = 200;
+    blocks = [] as CreateEngineBlock[];
     jumpMax = this.settings.tile * this.settings.jumpHeight;
-    blocks = this.settings.blocks.map(b => (b * this.settings.tile));
+    
+    defaultLevel =  {
+        length: 10,
+        spacingMin: 100,
+        spacingMax: 200,
+        heightMin: 200,
+        heightMax: 400,
+        widthMin: 180,
+        widthMax: 260
+    }
+    
+    createLevel(level: CreateEngineLevel = this.defaultLevel) {
+        this.blocks[0] = { 
+            transform: 140,
+            height: 300,
+            width: 180
+        };
+        
+        for (let i = 1; i < level.length; i++) {
+            this.blocks.push({
+                height: (level.heightMin + (Math.random() * (level.heightMax - level.heightMin))),
+                width: (level.widthMin + (Math.random() * (level.widthMax - level.widthMin))),
+                transform: this.blocks[i-1].transform + (level.spacingMin + (Math.random() * (level.spacingMax - level.spacingMin)))
+            })
+        }
+        
+        this.blocks = this.blocks.map( (block => ({ height: block.height, width: block.width, transform: block.transform * this.settings.tile })) );
+        this.width = this.blocks[this.blocks.length-1].transform + 2000;
+    }
 
     checkBlocks() {
-        const charXPos = this.stage + 200;
+        const charXPos = this.stage + this.offset;
         const charYPos = this.position;
 
-        if (charXPos > this.blocks[this.blocks.length - 1] + 200 && this.position <= 0) {
+        if (charXPos > this.blocks[this.blocks.length - 1].transform + this.offset && this.position <= 0) {
             this.game = gameStatus.Win;
         }
 
-        this.blocks.forEach((block: number) => {
+        this.blocks.forEach((block: CreateEngineBlock) => {
             if (
-                charXPos + this.settings.charWidth >= block
+                charXPos + this.settings.charWidth >= block.transform
                 && charYPos <= this.settings.blockHeight
                 && charYPos + this.settings.charHeight >= 0
-                && charXPos <= block + this.settings.blockWidth
+                && charXPos <= block.transform + this.settings.blockWidth
             ) {
                 this.game = gameStatus.Fail;
             }
@@ -115,6 +159,7 @@ export class CreateEngine implements ICreateEngine {
         else {
             this.position -= (this.settings.tile * this.settings.jumpVelocity);
         }
+       
     };
 
     jump = () => {

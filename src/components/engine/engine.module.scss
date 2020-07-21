@@ -5,11 +5,18 @@
   width: 100vw;
 }
 
+.stage {
+  position: absolute;
+  display: block;
+  bottom: 0;
+  left: 0;
+  height: 100vh;
+  border: 50px solid #C84B1B;
+}
+
 .character {
   position: absolute;
   display: block;
-  height: 100px;
-  width: 100px;
   bottom: 0;
   left: 0;
   background-image: url('../../assets/images/mario.png');
@@ -17,21 +24,11 @@
   border: 1px solid black;
 }
 
-.stage {
-  position: absolute;
-  display: block;
-  bottom: 0;
-  left: 0;
-  height: 100vh;
-  width: calc(10 * 100vw);
-  border: 50px solid #C84B1B;
-}
+
 
 .block {
   position: absolute;
   display: block;
-  height: 200px;
-  width: 80px;
   bottom: 0;
   left: 0;
   background-image: url('../../assets/images/pipe.png');
